@@ -1,47 +1,30 @@
 package rpool
 
-import (
-	"sync"
-	"time"
-)
+import "time"
 
 type RPool struct {
-	max     int
-	current int
-	mutex   sync.Mutex
+	ch chan bool
 }
 
 func NewRPool(max int) *RPool {
-	return &RPool{max: max}
-}
-
-func (rp *RPool) Add() {
-	for {
-		rp.mutex.Lock()
-		if rp.current < rp.max {
-			rp.current += 1
-			rp.mutex.Unlock()
-			break
-		}
-		rp.mutex.Unlock()
-		time.Sleep(1 * time.Nanosecond)
+	return &RPool{
+		ch: make(chan bool, max),
 	}
 }
 
+func (rp *RPool) Add() {
+	rp.ch <- false
+}
+
 func (rp *RPool) Done() {
-	rp.mutex.Lock()
-	rp.current -= 1
-	rp.mutex.Unlock()
+	<-rp.ch
 }
 
 func (rp *RPool) Wait() {
 	for {
-		rp.mutex.Lock()
-		if rp.current == 0 {
-			rp.mutex.Unlock()
-			break
+		if len(rp.ch) == 0 {
+			return
 		}
-		rp.mutex.Unlock()
-		time.Sleep(1 * time.Nanosecond)
+		time.Sleep(1 * time.Millisecond)
 	}
 }

@@ -21,5 +21,6 @@ func TestRPool(t *testing.T) {
 		rp.Add()
 		go sleep(rp, i)
 	}
+	time.Sleep(1 * time.Second)
 	rp.Wait()
 }
