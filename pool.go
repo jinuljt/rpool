@@ -1,7 +1,5 @@
 package rpool
 
-import "time"
-
 type RPool struct {
 	ch chan bool
 }
@@ -21,10 +19,15 @@ func (rp *RPool) Done() {
 }
 
 func (rp *RPool) Wait() {
+	count := 0
+	max := cap(rp.ch)
+
 	for {
-		if len(rp.ch) == 0 {
+		rp.ch <- true
+		count += 1
+		if max == count {
 			return
 		}
-		time.Sleep(1 * time.Millisecond)
+
 	}
 }
