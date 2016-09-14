@@ -15,9 +15,6 @@ rpool 是一个go协程的资源池。它保证同时只有指定个数的协程
 
 ## 如何使用rpool ##
 
-pool_text.go 已经说明的很清楚了。
-
-如果不想打开pool_text.go，请看下面的例子
 ```
 //初始化一个rpool，指定最多同时执行的100个协程
 rp = rpool.NewRPool(100)
